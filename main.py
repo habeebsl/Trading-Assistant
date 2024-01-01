@@ -44,7 +44,6 @@ uptrend_or_ema=df['is_uptrendema'].sum()
 
 print("\n***SMA***")
 if percentage(uptrend_or_sma, len(df['SMA'])) > 60:
-    print(df['is_uptrendsma'])
     print(f"Closing price was above the SMA {percentage(uptrend_or_sma, len(df['SMA']))}% of the time")
     print("Uptrend Indication")
 else:
@@ -54,7 +53,6 @@ else:
 
 print("\n***EMA***")
 if percentage(uptrend_or_ema, len(df['EMA'])) > 60:
-    print(df['is_uptrendema'])
     print(f"Closing price was above the EMA {percentage(uptrend_or_ema, len(df['EMA']))}% of the time")
     print("Uptrend Indication")
 else:
