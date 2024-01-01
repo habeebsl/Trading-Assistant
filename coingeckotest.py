@@ -1,16 +1,19 @@
 import requests, json, pprint
 from datetime import datetime
 import pandas, ta
-import crypto_stuff
+import time
+
+
+import coinmarketcapTest, coin_prop
 
 def percentage(num, total):
     division_by_total = num/total
-    return division_by_total*100
+    return round(division_by_total*100)
 
-print(crypto_stuff.coin_price)
-print(crypto_stuff.price_update_time+"\n")
+print(coinmarketcapTest.coin_price)
+print(coinmarketcapTest.price_update_time+"\n")
 
-get_coin_info = requests.get("https://api.coingecko.com/api/v3/coins/ripple/ohlc?vs_currency=NGN&days=30")
+get_coin_info = requests.get(f"https://api.coingecko.com/api/v3/coins/{coin_prop.coin_name[0].lower()}/ohlc?vs_currency={coin_prop.currency_code}&days={coin_prop.ta_days}")
 status = get_coin_info.status_code
 
 convert = get_coin_info.text
@@ -26,13 +29,15 @@ df['RSI'] = ta.momentum.RSIIndicator(df['close'], window=len(df)).rsi()
 
 rsi_value=df.loc[len(df)-1, 'RSI']
 print("***RSI***")
+print(f"RSI VALUE - {rsi_value}")
+print("RSI VALUE INDICATION - ", end="")
 if rsi_value > 70:
     print("overbought - Bearish")
 elif rsi_value < 30:
     print("Oversold - Bullish")
 else:
     print("Neither overbought or oversold - Can go either way")
-print(rsi_value)
+
 
 df['SMA'] = ta.trend.sma_indicator(df['close'], window=3)
 df['EMA'] = ta.trend.ema_indicator(df['close'], window=3)
@@ -46,20 +51,20 @@ uptrend_or_ema=df['is_uptrendema'].sum()
 print("\n***SMA***")
 if percentage(uptrend_or_sma, len(df['SMA'])) > 60:
     print(df['is_uptrendsma'])
-    print(df['is_uptrendsma'].sum())
+    print(f"Closing price was above the SMA {percentage(uptrend_or_sma, len(df['SMA']))}% of the time")
     print("Uptrend Indication")
 else:
-    print(percentage(uptrend_or_sma, len(df['SMA'])))
+    print(f"Closing price was above the SMA {percentage(uptrend_or_sma, len(df['SMA']))}% of the time")
     print("Downtrend Indication")
 
 
 print("\n***EMA***")
 if percentage(uptrend_or_ema, len(df['EMA'])) > 60:
     print(df['is_uptrendema'])
-    print(df['is_uptrendema'].sum())
+    print(f"Closing price was above the EMA {percentage(uptrend_or_ema, len(df['EMA']))}% of the time")
     print("Uptrend Indication")
 else:
-    print(percentage(uptrend_or_ema, len(df['EMA'])))
+    print(f"Closing price was above the EMA {percentage(uptrend_or_ema, len(df['EMA']))}% of the time")
     print("Downtrend Indication")
 
 df['macd'] = ta.trend.macd(df['close'], window_slow=26, window_fast=12)

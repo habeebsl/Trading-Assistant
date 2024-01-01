@@ -2,13 +2,16 @@ from requests import Request, Session
 from requests.exceptions import ConnectionError, Timeout, TooManyRedirects
 import json
 import datetime, pytz
+import coin_prop
+from coinID import found_id
+
 
 url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest'
 parameters = {
   'start':'1',
   'limit':'5000',
   'sort':'price',
-  'convert':'NGN'
+  'convert':coin_prop.currency_code
 }
 headers = {
   'Accepts': 'application/json',
@@ -32,10 +35,10 @@ def convert_WAT(to_convert):
 try:
   response = session.get(url, params=parameters)
   data = json.loads(response.text)
-  target_crypto_id = 52
+  target_crypto_id = found_id
   index_of_coin = find_index_by_name(data["data"], target_crypto_id)
-  coin_price=f"XRP PRICE - N{round(data['data'][index_of_coin]['quote']['NGN']['price'], 3)}"
-  time=data['data'][1204]['quote']['NGN']['last_updated']
+  coin_price=f"{coin_prop.coin_name[1].upper()} PRICE - {coin_prop.currency_code}{round(data['data'][index_of_coin]['quote'][coin_prop.currency_code]['price'], 3)}"
+  time=data['data'][1204]['quote'][coin_prop.currency_code]['last_updated']
   
   converted_wat = convert_WAT(time)
 
